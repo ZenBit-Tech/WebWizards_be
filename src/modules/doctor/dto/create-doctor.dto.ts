@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsISO31661Alpha2,
+  IsNotEmpty,
+  IsString,
+  Matches,
+} from 'class-validator';
+import { ADDRESS_REGEX, CITY_REGEX, DATE_REGEX } from 'src/shared/consts';
 import { Gender, Role } from 'src/shared/enums';
 
 export default class CreateDoctorDto {
@@ -51,7 +59,7 @@ export default class CreateDoctorDto {
 
   @ApiProperty({
     description: "Doctor's gender",
-    example: 'Local',
+    example: 'Male',
   })
   @IsEnum(Gender)
   gender: Gender;
@@ -60,13 +68,16 @@ export default class CreateDoctorDto {
     description: "Doctor's birthday",
     example: '10/20/1980',
   })
-  @IsString()
+  @Matches(DATE_REGEX, {
+    message: 'Invalid date type',
+  })
   dateOfBirth: string;
 
   @ApiProperty({
     description: "Doctor's country",
-    example: 'Germany',
+    example: 'DE',
   })
+  @IsISO31661Alpha2()
   @IsString()
   country: string;
 
@@ -74,12 +85,18 @@ export default class CreateDoctorDto {
     description: "Doctor's city",
     example: 'Frankfurt',
   })
+  @Matches(CITY_REGEX, {
+    message: 'Invalid city name',
+  })
   @IsString()
   city: string;
 
   @ApiProperty({
     description: "Doctor's address",
     example: 'Berger Str. 22',
+  })
+  @Matches(ADDRESS_REGEX, {
+    message: 'Invalid string',
   })
   @IsString()
   address: string;

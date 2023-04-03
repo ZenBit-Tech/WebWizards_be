@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import DoctorService from './doctor.service';
 import CreateDoctorDto from './dto/create-doctor.dto';
@@ -11,6 +20,7 @@ export default class DoctorController {
   @ApiOperation({ summary: 'Doctor creation' })
   @ApiResponse({ status: 201, type: Doctor })
   @Post()
+  @UsePipes(new ValidationPipe())
   createDoctor(@Body() doctorDto: CreateDoctorDto): Promise<Doctor> {
     return this.doctorService.createDoctor(doctorDto);
   }

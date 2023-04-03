@@ -63,7 +63,7 @@ export default class Doctor {
   @Column()
   dateOfBirth: string;
 
-  @ApiProperty({ example: 'Germany' })
+  @ApiProperty({ example: 'DE' })
   @Column({
     default: null,
   })
