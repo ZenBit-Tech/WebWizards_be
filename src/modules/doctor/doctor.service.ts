@@ -59,6 +59,19 @@ export default class DoctorService {
     }
   }
 
+  async getDoctorByEmail(email: string): Promise<Doctor | null> {
+    try {
+      const doctor = await this.doctorRepository
+        .createQueryBuilder('doctor')
+        .where('doctor.email = :email', { email })
+        .getOne();
+
+      return doctor;
+    } catch (err) {
+      throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   async deleteDoctorById(id: number): Promise<void> {
     try {
       const result = await this.doctorRepository

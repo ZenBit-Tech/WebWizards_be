@@ -24,14 +24,21 @@ export default class DoctorController {
 
   @ApiOperation({ summary: 'Getting doctor by id' })
   @ApiResponse({ status: 200, type: Doctor })
-  @Get('/:id')
+  @Get('/id/:id')
   getOne(@Param('id') id: number): Promise<Doctor> {
     return this.doctorService.getDoctorByID(id);
   }
 
+  @ApiOperation({ summary: 'Getting doctor by email' })
+  @ApiResponse({ status: 200, type: Doctor })
+  @Get('/email/:email')
+  findByEmail(@Param('email') email: string): Promise<Doctor> {
+    return this.doctorService.getDoctorByEmail(email);
+  }
+
   @ApiOperation({ summary: 'Delete doctor by id' })
   @ApiResponse({ status: 200, type: [Doctor] })
-  @Delete('/:id')
+  @Delete('/id/:id')
   deleteOne(@Param('id') id: number): Promise<void> {
     return this.doctorService.deleteDoctorById(id);
   }
