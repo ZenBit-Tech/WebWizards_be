@@ -7,7 +7,12 @@ import {
   IsString,
   Matches,
 } from 'class-validator';
-import { ADDRESS_REGEX, CITY_REGEX, DATE_REGEX } from 'src/shared/consts';
+import {
+  ADDRESS_REGEX,
+  CITY_REGEX,
+  DATE_REGEX,
+  TIME_ZONE_REGEX,
+} from 'src/shared/consts';
 import { Gender, Role } from 'src/shared/enums';
 
 export default class CreateDoctorDto {
@@ -96,7 +101,7 @@ export default class CreateDoctorDto {
     example: 'Berger Str. 22',
   })
   @Matches(ADDRESS_REGEX, {
-    message: 'Invalid string',
+    message: 'Invalid address',
   })
   @IsString()
   address: string;
@@ -104,6 +109,9 @@ export default class CreateDoctorDto {
   @ApiProperty({
     description: "Doctor's time zone",
     example: '(GMT+2) Europe/Berlin',
+  })
+  @Matches(TIME_ZONE_REGEX, {
+    message: 'Invalid time zone format',
   })
   @IsString()
   timeZone: string;
