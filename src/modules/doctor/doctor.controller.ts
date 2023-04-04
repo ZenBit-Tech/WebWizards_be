@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   Post,
@@ -34,15 +33,8 @@ export default class DoctorController {
 
   @ApiOperation({ summary: 'Getting doctor by id' })
   @ApiResponse({ status: 200, type: Doctor })
-  @Get('/id/:id')
+  @Get(':id')
   getOne(@Param('id') id: number): Promise<Doctor> {
     return this.doctorService.getDoctorByID(id);
-  }
-
-  @ApiOperation({ summary: 'Delete doctor by id' })
-  @ApiResponse({ status: 200, type: [Doctor] })
-  @Delete('/id/:id')
-  deleteOne(@Param('id') id: number): Promise<void> {
-    return this.doctorService.deleteDoctorById(id);
   }
 }

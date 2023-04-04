@@ -5,7 +5,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NO_ROWS_AFFECTED } from 'src/shared/consts';
 import { Repository } from 'typeorm';
 import CreateDoctorDto from './dto/create-doctor.dto';
 import Doctor from './entity/doctor.entity';
@@ -54,22 +53,6 @@ export default class DoctorService {
       }
 
       return doctor;
-    } catch (err) {
-      throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  async deleteDoctorById(id: number): Promise<void> {
-    try {
-      const result = await this.doctorRepository
-        .createQueryBuilder('doctor')
-        .delete()
-        .where('doctor.id = :id', { id })
-        .execute();
-
-      if (result.affected === NO_ROWS_AFFECTED) {
-        throw new NotFoundException(`Doctor with id ${id} not found`);
-      }
     } catch (err) {
       throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
