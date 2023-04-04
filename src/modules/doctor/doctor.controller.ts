@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -11,6 +12,7 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import DoctorService from './doctor.service';
 import CreateDoctorDto from './dto/create-doctor.dto';
 import Doctor from './entity/doctor.entity';
+import AuthGuard from '../auth/auth.guard';
 
 @Controller('doctor')
 export default class DoctorController {
@@ -33,6 +35,7 @@ export default class DoctorController {
 
   @ApiOperation({ summary: 'Getting doctor by id' })
   @ApiResponse({ status: 200, type: Doctor })
+  @UseGuards(AuthGuard)
   @Get(':id')
   getOne(@Param('id') id: number): Promise<Doctor> {
     return this.doctorService.getDoctorByID(id);
