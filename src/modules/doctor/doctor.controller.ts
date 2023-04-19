@@ -8,10 +8,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import JwtPatchGuard from 'modules/auth/utils/PatchGuard';
 import DoctorService from './doctor.service';
 import Doctor from './entity/doctor.entity';
 import CreateDoctorDto from './dto/create-doctor.dto';
+import JwtPatchGuard from '../auth/utils/PatchGuard';
 
 @Controller('create_doctor')
 export default class DoctorController {
