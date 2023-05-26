@@ -20,6 +20,8 @@ import {
 import Appointment from './entity/appointment.entity';
 import CreateAppointmentDto from './dto/create-appointment.dto';
 
+const KJUR = require('jsrsasign');
+
 @Injectable()
 export default class AppointmentService {
   constructor(
@@ -353,5 +355,51 @@ export default class AppointmentService {
     } catch (err) {
       throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  async startAppointments() {
+    const currentDate = new Date();
+    let diffTime: number;
+    try {
+      const nextAppointment = await this.appointmentRepository
+        .createQueryBuilder('appointment')
+        .where('appointment.startTime > :currentDate', { currentDate })
+        .orderBy('appointment.startTime', 'ASC')
+        .getOne();
+      if (nextAppointment) {
+        diffTime = Number(nextAppointment.startTime) - Number(currentDate);
+      }
+
+      if (nextAppointment) {
+        return nextAppointment;
+      }
+    } catch (error) {
+      throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async deleteAppointments(): Promise<void> {
+    try {
+      const currentDate = new Date();
+      const appointmentsToDelete = await this.appointmentRepository
+        .createQueryBuilder('appointment')
+        .where('appointment.endTime < :currentDate', { currentDate })
+        .getMany();
+
+      await this.appointmentRepository.remove(appointmentsToDelete);
+    } catch (error) {
+      throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  getRoomName(id: number, startTime: Date): string {
+    const oHeader = { alg: 'HS256', typ: 'JWT' };
+
+    return KJUR.jws.JWS.sign(
+      'HS256',
+      oHeader,
+      JSON.stringify(id),
+      JSON.stringify(startTime),
+    ).substring(0, 35);
   }
 }
