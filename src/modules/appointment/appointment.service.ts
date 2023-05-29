@@ -21,6 +21,8 @@ import * as moment from 'moment';
 import Appointment from './entity/appointment.entity';
 import CreateAppointmentDto from './dto/create-appointment.dto';
 
+const KJUR = require('jsrsasign');
+
 @Injectable()
 export default class AppointmentService {
   constructor(
@@ -430,5 +432,16 @@ export default class AppointmentService {
     } catch (err) {
       throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  getRoomName(id: number, startTime: Date): string {
+    const oHeader = { alg: 'HS256', typ: 'JWT' };
+
+    return KJUR.jws.JWS.sign(
+      'HS256',
+      oHeader,
+      JSON.stringify(id),
+      JSON.stringify(startTime),
+    ).substring(0, 35);
   }
 }
