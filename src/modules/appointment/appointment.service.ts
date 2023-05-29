@@ -17,9 +17,9 @@ import {
   THIRTY,
   ZERO,
 } from '@shared/consts';
+import * as moment from 'moment';
 import Appointment from './entity/appointment.entity';
 import CreateAppointmentDto from './dto/create-appointment.dto';
-import * as moment from 'moment';
 
 @Injectable()
 export default class AppointmentService {
