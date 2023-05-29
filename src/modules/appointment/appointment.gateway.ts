@@ -26,46 +26,52 @@ export class AppointmentGateway
     this.logger.log('WebSocket init');
   }
 
-  async handleConnection(client: SocketWithAuth) {
-    const { sockets } = this.io;
+  async handleConnection(client: SocketWithAuth): Promise<void> {
     this.logger.log(`Client with id ${client.id} connected`);
   }
 
-  handleDisconnect(client: SocketWithAuth) {
+  async handleDisconnect(client: SocketWithAuth): Promise<void> {
     const { sockets } = this.io;
 
     this.logger.log(`Client with id ${client.id} disconnected`);
     this.logger.debug(`Number of connected sockets ${sockets.size}`);
   }
 
-  @Cron('*/15 * * * * *')
-  async joinNextAppointment() {
+  @Cron('*/5 * * * * *')
+  async joinNextAppointment(): Promise<void> {
     const { sockets } = this.io;
-    const nextAppointment = await this.appointmentService.startAppointments();
+    const nextAppointment =
+      (await this.appointmentService.startAppointments()) as any;
+    console.log(nextAppointment);
 
     if (nextAppointment) {
-      const localDoctor = [...sockets.values()].find(
-        (obj: SocketWithAuth) => obj.doctorId == nextAppointment.localDoctor.id,
+      const localDoctorSocket = [...sockets.values()].find(
+        (obj: SocketWithAuth) => obj.doctorId == nextAppointment.localDoctorId,
       );
 
-      const remoteDoctor = [...sockets.values()].find(
-        (obj: SocketWithAuth) =>
-          obj.doctorId == nextAppointment.remoteDoctor.id,
+      const remoteDoctorSocket = [...sockets.values()].find(
+        (obj: SocketWithAuth) => obj.doctorId == nextAppointment.remoteDoctorId,
       );
 
-      const remoteDoctorSocketId = remoteDoctor?.id;
-      const localDoctorSocketId = localDoctor?.id;
+      const remoteDoctorSocketId = remoteDoctorSocket?.id;
+
+      const localDoctorSocketId = localDoctorSocket?.id;
+
+      const roomName = this.appointmentService.getRoomName(
+        nextAppointment.id,
+        nextAppointment.startTime,
+      );
 
       this.appointmentService.deleteAppointments();
       if (remoteDoctorSocketId) {
         this.io
           .to(remoteDoctorSocketId)
-          .emit('appointment_update', nextAppointment);
+          .emit('appointment_update', { nextAppointment, roomName });
       }
       if (localDoctorSocketId) {
         this.io
           .to(localDoctorSocketId)
-          .emit('appointment_update', nextAppointment);
+          .emit('appointment_update', { nextAppointment, roomName });
       }
     }
   }
