@@ -243,26 +243,8 @@ export default class AppointmentService {
         .getOne();
 
       if (nextAppointment) {
-        console.log(nextAppointment);
         return nextAppointment;
       }
-      //
-      // const nextAppointment = await this.appointmentRepository
-      //   .createQueryBuilder('appointment')
-      //   .where('appointment.startTime > :formattedCurrentTime', {
-      //     formattedCurrentTime,
-      //   })
-      //   .orderBy('appointment.startTime', 'ASC')
-      //   .getOne();
-
-      // if (nextAppointment) {
-      //   diffTime = Number(nextAppointment.startTime) - Number(currentDate);
-      // }
-
-      // if (nextAppointment) {
-      //   console.log(nextAppointment);
-      //   return nextAppointment;
-      // }
     } catch (error) {
       throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
