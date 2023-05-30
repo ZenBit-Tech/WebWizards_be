@@ -21,6 +21,8 @@ import NotesModule from 'modules/notes/notes.module';
 import File from 'modules/notes/entity/file.entity';
 import DoctorModule from './modules/doctor/doctor.module';
 import AuthModule from './modules/auth/auth.module';
+import MessagesModule from './modules/messages/messages.module';
+import Message from './modules/messages/entities/message.entity';
 
 @Module({
   imports: [
@@ -39,7 +41,15 @@ import AuthModule from './modules/auth/auth.module';
         username: configService.get('DB_USER'),
         password: configService.get('DB_PASS'),
         database: configService.get('DB_NAME'),
-        entities: [Doctor, Patient, Appointment, Availability, Note, File],
+        entities: [
+          Doctor,
+          Patient,
+          Appointment,
+          Availability,
+          Message,
+          Note,
+          File,
+        ],
         synchronize: true,
       }),
       inject: [ConfigService],
@@ -51,6 +61,7 @@ import AuthModule from './modules/auth/auth.module';
     AppointmentModule,
     AvailabilityModule,
     ZoomModule,
+    MessagesModule,
   ],
   providers: [
     {
