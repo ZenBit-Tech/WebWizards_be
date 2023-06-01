@@ -79,7 +79,7 @@ export default class AppointmentController {
   }
 
   @Get('start')
-  startAndDeleteAppointments() {
+  startAndDeleteAppointments(): string {
     this.appointmentService.startAppointments();
     this.appointmentService.deleteAppointments();
     return 'Starting appointments';
