@@ -16,6 +16,7 @@ import {
   TEN,
   THIRTY,
   ZERO,
+  DATE_FORMAT,
 } from '@shared/consts';
 import Appointment from './entity/appointment.entity';
 import CreateAppointmentDto from './dto/create-appointment.dto';
@@ -207,11 +208,10 @@ export default class AppointmentService {
   }
 
   async startAppointments() {
-    const currentDate = new Date();
     const formattedCurrentTime = new Date(
-      moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
+      moment(new Date()).format(DATE_FORMAT),
     );
-    let diffTime: number;
+
     try {
       const queryBuilder: SelectQueryBuilder<Appointment> =
         this.appointmentRepository.createQueryBuilder('appointment');
@@ -250,7 +250,7 @@ export default class AppointmentService {
     }
   }
 
-  async deleteAppointments() {
+  async deleteAppointments(): Promise<void> {
     try {
       const currentDate = new Date();
       const appointmentsToDelete = await this.appointmentRepository

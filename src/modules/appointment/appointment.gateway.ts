@@ -9,6 +9,7 @@ import {
 } from '@nestjs/websockets';
 import { Namespace } from 'socket.io';
 import { SocketWithAuth } from './types';
+import Appointment from './entity/appointment.entity';
 
 import AppointmentService from './appointment.service';
 
@@ -39,18 +40,20 @@ export class AppointmentGateway
   }
 
   @Cron('*/15 * * * * *')
-  async joinNextAppointment() {
+  async joinNextAppointment(): Promise<void> {
     const { sockets } = this.io;
-    const nextAppointment = await this.appointmentService.startAppointments();
+    const nextAppointment =
+      (await this.appointmentService.startAppointments()) as Appointment;
 
     if (nextAppointment) {
       const localDoctor = [...sockets.values()].find(
-        (obj: SocketWithAuth) => obj.doctorId == nextAppointment.localDoctor.id,
+        (obj: SocketWithAuth) =>
+          obj.doctorId === nextAppointment.localDoctor.id,
       );
 
       const remoteDoctor = [...sockets.values()].find(
         (obj: SocketWithAuth) =>
-          obj.doctorId == nextAppointment.remoteDoctor.id,
+          obj.doctorId === nextAppointment.remoteDoctor.id,
       );
 
       const remoteDoctorSocketId = remoteDoctor?.id;
