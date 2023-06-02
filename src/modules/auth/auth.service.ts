@@ -48,7 +48,7 @@ export default class AuthService {
 
   private readonly accessTokenCookieOptions: CookieOptions = {
     maxAge: this.configService.get('ACCESS_TOKEN_MAX_AGE'),
-    httpOnly: false,
+    httpOnly: true,
     domain: this.configService.get('ACCESS_TOKEN_DOMAIN'),
     path: '/',
     sameSite: 'none',
