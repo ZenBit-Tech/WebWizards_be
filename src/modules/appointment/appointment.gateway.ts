@@ -38,12 +38,10 @@ export class AppointmentGateway
     this.logger.debug(`Number of connected sockets ${sockets.size}`);
   }
 
-  @Cron('*/5 * * * * *')
+  @Cron('*/15 * * * * *')
   async joinNextAppointment(): Promise<void> {
     const { sockets } = this.io;
-    const nextAppointment =
-      (await this.appointmentService.startAppointments()) as Appointment;
-    console.log(nextAppointment);
+    const nextAppointment = await this.appointmentService.startAppointments();
     if (nextAppointment) {
       const localDoctor = [...sockets.values()].find(
         (obj: SocketWithAuth) =>
