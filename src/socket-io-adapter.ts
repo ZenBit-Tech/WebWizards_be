@@ -15,14 +15,9 @@ export class SocketIOAdapter extends IoAdapter {
     super(app);
   }
 
-  createIOServer(port: number, options?: ServerOptions) {
-    const clientPort = parseInt(this.configService.get('CLIENT_PORT'));
-
+  createIOServer(port: number, options?: ServerOptions): Server {
     const cors = {
-      origin: [
-        `http://localhost:${clientPort}`,
-        new RegExp(`/^http:\/\/192\.168\.1\.([1-9]|[1-9]\d):${clientPort}$/`),
-      ],
+      origin: [this.configService.get('API_URL')],
     };
 
     this.logger.log('Configuring SocketIO server with custom CORS options', {
@@ -46,7 +41,7 @@ export class SocketIOAdapter extends IoAdapter {
 
 const createTokenMiddleware =
   (jwtService: JwtService, logger: Logger) =>
-  (socket: SocketWithAuth, next) => {
+  (socket: SocketWithAuth, next): void => {
     // for Postman testing support, fallback to token header
     const token = socket.handshake.auth.token || socket.handshake.headers.token;
 

@@ -16,6 +16,7 @@ import {
   TEN,
   THIRTY,
   ZERO,
+  DATE_FORMAT,
 } from '@shared/consts';
 import * as moment from 'moment';
 import Appointment from './entity/appointment.entity';
@@ -208,12 +209,12 @@ export default class AppointmentService {
     }
   }
 
-  async startAppointments() {
-    const currentDate = new Date();
+  async startAppointments(): Promise<Appointment> {
+    this.deleteAppointments();
     const formattedCurrentTime = new Date(
-      moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
+      moment(new Date()).format(DATE_FORMAT), //TODO
     );
-    let diffTime: number;
+
     try {
       const queryBuilder: SelectQueryBuilder<Appointment> =
         this.appointmentRepository.createQueryBuilder('appointment');
@@ -245,32 +246,14 @@ export default class AppointmentService {
         .getOne();
 
       if (nextAppointment) {
-        console.log(nextAppointment);
         return nextAppointment;
       }
-      //
-      // const nextAppointment = await this.appointmentRepository
-      //   .createQueryBuilder('appointment')
-      //   .where('appointment.startTime > :formattedCurrentTime', {
-      //     formattedCurrentTime,
-      //   })
-      //   .orderBy('appointment.startTime', 'ASC')
-      //   .getOne();
-
-      // if (nextAppointment) {
-      //   diffTime = Number(nextAppointment.startTime) - Number(currentDate);
-      // }
-
-      // if (nextAppointment) {
-      //   console.log(nextAppointment);
-      //   return nextAppointment;
-      // }
     } catch (error) {
       throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  async deleteAppointments() {
+  async deleteAppointments(): Promise<void> {
     try {
       const currentDate = new Date();
       const appointmentsToDelete = await this.appointmentRepository
@@ -442,6 +425,6 @@ export default class AppointmentService {
       oHeader,
       JSON.stringify(id),
       JSON.stringify(startTime),
-    ).substring(0, 35);
+    ).substring(0, 35); // TODO
   }
 }
