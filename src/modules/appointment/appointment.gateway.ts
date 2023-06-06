@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import {
   OnGatewayConnection,
@@ -10,6 +10,7 @@ import {
 import { Namespace } from 'socket.io';
 import { SocketWithAuth } from './types';
 import Appointment from './entity/appointment.entity';
+
 import AppointmentService from './appointment.service';
 
 @WebSocketGateway({ namespace: 'appointment', cors: true })
@@ -27,62 +28,50 @@ export class AppointmentGateway
   }
 
   async handleConnection(client: SocketWithAuth): Promise<void> {
-    try {
-      this.logger.log(`Client with id ${client.id} connected`);
-    } catch (err) {
-      throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    this.logger.log(`Client with id ${client.id} connected`);
   }
 
   async handleDisconnect(client: SocketWithAuth): Promise<void> {
-    try {
-      const { sockets } = this.io;
-      this.logger.log(`Client with id ${client.id} disconnected`);
-      this.logger.debug(`Number of connected sockets ${sockets.size}`);
-    } catch (err) {
-      throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    const { sockets } = this.io;
+    this.logger.log(`Client with id ${client.id} disconnected`);
+    this.logger.debug(`Number of connected sockets ${sockets.size}`);
   }
 
   @Cron('*/5 * * * * *')
   async joinNextAppointment(): Promise<void> {
-    try {
-      const { sockets } = this.io;
-      const nextAppointment =
-        (await this.appointmentService.startAppointments()) as Appointment;
+    const { sockets } = this.io;
+    const nextAppointment =
+      (await this.appointmentService.startAppointments()) as Appointment;
 
-      if (nextAppointment) {
-        const localDoctor = [...sockets.values()].find(
-          (obj: SocketWithAuth) =>
-            obj.doctorId === nextAppointment.localDoctor.id,
-        );
+    if (nextAppointment) {
+      const localDoctor = [...sockets.values()].find(
+        (obj: SocketWithAuth) =>
+          obj.doctorId === nextAppointment.localDoctor.id,
+      );
 
-        const remoteDoctor = [...sockets.values()].find(
-          (obj: SocketWithAuth) =>
-            obj.doctorId === nextAppointment.remoteDoctor.id,
-        );
+      const remoteDoctor = [...sockets.values()].find(
+        (obj: SocketWithAuth) =>
+          obj.doctorId === nextAppointment.remoteDoctor.id,
+      );
 
-        const remoteDoctorSocketId = remoteDoctor?.id;
-        const localDoctorSocketId = localDoctor?.id;
+      const remoteDoctorSocketId = remoteDoctor?.id;
+      const localDoctorSocketId = localDoctor?.id;
 
-        const roomName = this.appointmentService.getRoomName(
+      const roomName = this.appointmentService.getRoomName(
         nextAppointment.id,
         nextAppointment.startTime,
       );
 
-        if (remoteDoctorSocketId) {
-          this.io
-            .to(remoteDoctorSocketId)
+      if (remoteDoctorSocketId) {
+        this.io
+          .to(remoteDoctorSocketId)
           .emit('appointment_update', { nextAppointment, roomName });
-        }
-        if (localDoctorSocketId) {
-          this.io
-            .to(localDoctorSocketId)
-          .emit('appointment_update', { nextAppointment, roomName });
-        }
       }
-    } catch (err) {
-      throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
+      if (localDoctorSocketId) {
+        this.io
+          .to(localDoctorSocketId)
+          .emit('appointment_update', { nextAppointment, roomName });
+      }
     }
   }
 }
