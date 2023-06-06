@@ -4,6 +4,6 @@ import { ZoomController } from './zoom.controller';
 
 @Module({
   controllers: [ZoomController],
-  providers: [ZoomService],
+  providers: [ZoomService]
 })
 export class ZoomModule {}
