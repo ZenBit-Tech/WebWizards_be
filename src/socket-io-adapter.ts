@@ -49,7 +49,6 @@ const createTokenMiddleware =
 
     try {
       const payload = jwtService.verify(token);
-      console.log(payload);
       socket.doctorId = payload.id;
       socket.firstName = payload.firstName;
       socket.lastName = payload.lastName;

@@ -1,8 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { IoAdapter } from '@nestjs/platform-socket.io';
-import * as socketio from 'socket.io';
 import { SocketIOAdapter } from 'socket-io-adapter';
 import { join } from 'path';
 import * as express from 'express';
@@ -17,7 +15,6 @@ async function bootstrap(): Promise<void> {
   });
 
   app.useWebSocketAdapter(new SocketIOAdapter(app, configService));
-  app.enableCors();
   app.use('/uploads', express.static(join(__dirname, '../uploads')));
 
   const config = new DocumentBuilder()

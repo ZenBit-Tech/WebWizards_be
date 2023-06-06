@@ -28,7 +28,6 @@ export class AppointmentGateway
 
   async handleConnection(client: SocketWithAuth): Promise<void> {
     try {
-      const { sockets } = this.io;
       this.logger.log(`Client with id ${client.id} connected`);
     } catch (err) {
       throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -38,7 +37,6 @@ export class AppointmentGateway
   async handleDisconnect(client: SocketWithAuth): Promise<void> {
     try {
       const { sockets } = this.io;
-
       this.logger.log(`Client with id ${client.id} disconnected`);
       this.logger.debug(`Number of connected sockets ${sockets.size}`);
     } catch (err) {
@@ -67,16 +65,20 @@ export class AppointmentGateway
         const remoteDoctorSocketId = remoteDoctor?.id;
         const localDoctorSocketId = localDoctor?.id;
 
-        this.appointmentService.deleteAppointments();
+        const roomName = this.appointmentService.getRoomName(
+        nextAppointment.id,
+        nextAppointment.startTime,
+      );
+
         if (remoteDoctorSocketId) {
           this.io
             .to(remoteDoctorSocketId)
-            .emit('appointment_update', nextAppointment);
+          .emit('appointment_update', { nextAppointment, roomName });
         }
         if (localDoctorSocketId) {
           this.io
             .to(localDoctorSocketId)
-            .emit('appointment_update', nextAppointment);
+          .emit('appointment_update', { nextAppointment, roomName });
         }
       }
     } catch (err) {

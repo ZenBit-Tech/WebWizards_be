@@ -12,6 +12,7 @@ import Availability from 'modules/availability/entity/availability.entity';
 import AvailabilityModule from 'modules/availability/availability.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { ZoomModule } from 'modules/zoom/zoom.module';
 import Note from 'modules/notes/entity/note.entity';
 import NotesModule from 'modules/notes/notes.module';
 import File from 'modules/notes/entity/file.entity';
@@ -57,6 +58,7 @@ import Message from './modules/messages/entities/message.entity';
     AppointmentModule,
     AvailabilityModule,
     MessagesModule,
+    ZoomModule,
   ],
   providers: [
     {
