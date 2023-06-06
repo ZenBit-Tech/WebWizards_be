@@ -44,7 +44,6 @@ export class AppointmentGateway
     const nextAppointment =
       (await this.appointmentService.startAppointments()) as Appointment;
     console.log(nextAppointment);
-
     if (nextAppointment) {
       const localDoctor = [...sockets.values()].find(
         (obj: SocketWithAuth) =>
