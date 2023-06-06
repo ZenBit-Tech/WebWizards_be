@@ -9,9 +9,9 @@ import {
 } from '@nestjs/websockets';
 import { Namespace } from 'socket.io';
 import { SocketWithAuth } from './types';
-import Appointment from './entity/appointment.entity';
 
 import AppointmentService from './appointment.service';
+import Appointment from './entity/appointment.entity';
 
 @WebSocketGateway({ namespace: 'appointment', cors: true })
 export class AppointmentGateway
@@ -33,6 +33,7 @@ export class AppointmentGateway
 
   async handleDisconnect(client: SocketWithAuth): Promise<void> {
     const { sockets } = this.io;
+
     this.logger.log(`Client with id ${client.id} disconnected`);
     this.logger.debug(`Number of connected sockets ${sockets.size}`);
   }
@@ -42,6 +43,7 @@ export class AppointmentGateway
     const { sockets } = this.io;
     const nextAppointment =
       (await this.appointmentService.startAppointments()) as Appointment;
+    console.log(nextAppointment);
 
     if (nextAppointment) {
       const localDoctor = [...sockets.values()].find(
@@ -53,7 +55,6 @@ export class AppointmentGateway
         (obj: SocketWithAuth) =>
           obj.doctorId === nextAppointment.remoteDoctor.id,
       );
-
       const remoteDoctorSocketId = remoteDoctor?.id;
       const localDoctorSocketId = localDoctor?.id;
 

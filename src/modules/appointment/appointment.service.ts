@@ -212,7 +212,7 @@ export default class AppointmentService {
   async startAppointments(): Promise<Appointment> {
     this.deleteAppointments();
     const formattedCurrentTime = new Date(
-      moment(new Date()).format(DATE_FORMAT), 
+      moment(new Date()).format(DATE_FORMAT), //TODO
     );
 
     try {
@@ -245,7 +245,9 @@ export default class AppointmentService {
         .orderBy('appointment.startTime', 'ASC')
         .getOne();
 
-      return nextAppointment;
+      if (nextAppointment) {
+        return nextAppointment;
+      }
     } catch (error) {
       throw new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
