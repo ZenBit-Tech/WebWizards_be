@@ -51,7 +51,7 @@ export default class AuthService {
     httpOnly: true,
     domain: this.configService.get('ACCESS_TOKEN_DOMAIN'),
     path: '/',
-    sameSite: 'lax',
+    sameSite: 'none',
     secure: false,
   };
 
