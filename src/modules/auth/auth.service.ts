@@ -48,7 +48,7 @@ export default class AuthService {
 
   private readonly accessTokenCookieOptions: CookieOptions = {
     maxAge: this.configService.get('ACCESS_TOKEN_MAX_AGE'),
-    httpOnly: true,
+    httpOnly: false,
     domain: this.configService.get('ACCESS_TOKEN_DOMAIN'),
     path: '/',
     sameSite: 'lax',
@@ -136,7 +136,7 @@ export default class AuthService {
     }
   }
 
-  async handleOauthDoctor(req: Request, res: Response): Promise<void> {
+  async handleOauthDoctor(req: Request, res: Response): Promise<string> {
     const code = req.query.code as string;
     const { id_token, access_token } = await this.getGoogleOauthTokens({
       code,
@@ -152,7 +152,9 @@ export default class AuthService {
     );
 
     res.clearCookie('accessToken');
-    res.cookie('accessToken', accessToken);
+    res.cookie('accessToken', accessToken, {
+      ...this.accessTokenCookieOptions,
+    });
 
     const existingDoctor = await this.doctorService.getDoctorByEmail(
       doctor.email,
@@ -163,6 +165,8 @@ export default class AuthService {
     } else {
       res.redirect(this.configService.get('SECOND_FORM_URL'));
     }
+
+    return accessToken;
   }
 
   private async getGoogleOauthTokens(code: {

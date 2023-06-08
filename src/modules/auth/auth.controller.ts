@@ -54,7 +54,7 @@ class AuthController {
   async handleRedirect(
     @Req() req: Request,
     @Res() res: Response,
-  ): Promise<void> {
+  ): Promise<string> {
     return this.authService.handleOauthDoctor(req, res);
   }
 
